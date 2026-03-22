@@ -1,0 +1,28 @@
+{
+  "version": "2025-01-ph-starter",
+  "description": "Starter PH payroll reference — validate against official SSS/PhilHealth/Pag-IBIG/BIR circulars before production.",
+  "sssMonthlySalaryBrackets": [
+    { "min": 0, "max": 4249.99, "employeeContribution": 180 },
+    { "min": 4250, "max": 7749.99, "employeeContribution": 337.5 },
+    { "min": 7750, "max": 24749.99, "employeeContribution": 900 },
+    { "min": 24750, "max": 1000000, "employeeContribution": 900 }
+  ],
+  "philhealth": {
+    "rate": 0.05,
+    "employeeShare": 0.5,
+    "floorPremium": 500,
+    "ceilingPremium": 5000
+  },
+  "pagibig": {
+    "rate": 0.02,
+    "maxEmployee": 100
+  },
+  "withholdingMonthly": [
+    { "min": 0, "max": 20833, "rate": 0, "base": 0 },
+    { "min": 20833.01, "max": 33332, "rate": 0.15, "base": 0 },
+    { "min": 33333, "max": 66666, "rate": 0.2, "base": 1875 },
+    { "min": 66667, "max": 166666, "rate": 0.25, "base": 8541.8 },
+    { "min": 166667, "max": 666666, "rate": 0.3, "base": 33541.8 },
+    { "min": 666667, "max": 100000000, "rate": 0.35, "base": 183541.8 }
+  ]
+}

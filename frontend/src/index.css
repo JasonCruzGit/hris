@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.7rem center;
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+    padding-right: 2.25rem;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+/* driver.js popover — match app dark theme */
+.dark .driver-popover {
+  background-color: rgb(15 23 42);
+  color: rgb(241 245 249);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+.dark .driver-popover-title {
+  color: rgb(241 245 249);
+}
+.dark .driver-popover-description {
+  color: rgb(203 213 225);
+}
+.dark .driver-popover-progress-text {
+  color: rgb(148 163 184);
+}
+.dark .driver-popover-close-btn {
+  color: rgb(100 116 139);
+}
+.dark .driver-popover-close-btn:hover,
+.dark .driver-popover-close-btn:focus {
+  color: rgb(226 232 240);
+}
+.dark .driver-popover-footer button {
+  background-color: rgb(30 41 59);
+  color: rgb(241 245 249);
+  border-color: rgb(51 65 85);
+  text-shadow: none;
+}
+.dark .driver-popover-footer button:hover,
+.dark .driver-popover-footer button:focus {
+  background-color: rgb(51 65 85);
+}
