@@ -65,3 +65,14 @@ Full-stack starter aligned with centralized employee data, RBAC, core HR modules
 ## Node version
 
 Prisma 5 supports Node 18+. For Prisma 7+, use Node 20+.
+
+## Deploying (e.g. Hostinger Node)
+
+Many hosts run `npm install --production` (or omit devDependencies), which **skips TypeScript** and breaks `npm run build`. This repo keeps **TypeScript, Prisma CLI, and `@types/*`** needed to compile in **dependencies** so `npm run build` works after a production install.
+
+- **Install:** `npm install` or `npm ci` (from `backend/` if the app root is the API folder).
+- **Build:** `npm run build` (runs `prisma generate` then `tsc`).
+- **Start:** `npm start` (runs `node dist/index.js`).
+- **Env:** set `DATABASE_URL`, `JWT_SECRET`, etc. (see `backend/.env.example`). Run migrations once: `npx prisma migrate deploy`.
+
+If the panel has a separate “install command”, avoid `--production` unless you prebuild elsewhere and only upload `dist/`.
