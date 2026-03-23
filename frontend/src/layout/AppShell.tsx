@@ -201,11 +201,11 @@ export function AppShell() {
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           ].join(" ")}
         >
-          <div className="mb-8 px-2">
+          <div className="mb-6 px-2">
             <div className="text-sm font-semibold uppercase tracking-wide text-slate-500">HRIS</div>
             <div className="text-lg font-semibold">Control Center</div>
           </div>
-          <nav className="space-y-0">
+          <nav className="h-[calc(100vh-7rem)] space-y-0 overflow-y-auto pr-1 lg:h-[calc(100vh-6.5rem)]">
             {navSectionBlocks.map((section, idx) => (
               <div
                 key={section.title}
