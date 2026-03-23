@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FloatingNotificationToast } from "../components/FloatingNotificationToast";
 import { TutorialTour } from "../components/TutorialTour";
 import { api } from "../api/client";
@@ -77,9 +77,11 @@ function notificationMeta(item: NotificationItem) {
 
 export function AppShell() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const role = user?.role ?? "EMPLOYEE";
   const isAdminArea = role !== "EMPLOYEE";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifError, setNotifError] = useState<string | null>(null);
@@ -149,6 +151,10 @@ export function AppShell() {
     return () => window.clearTimeout(t);
   }, [floating?.id]);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
   const markAsRead = async (id: string) => {
     try {
       await api(`/api/notifications/${id}/read`, { method: "PATCH" });
@@ -178,10 +184,22 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      {mobileMenuOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          aria-label="Close menu"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
       <div className="flex min-h-screen">
         <aside
+          id="staff-sidebar-nav"
           data-tour="staff-sidebar"
-          className="hidden w-64 shrink-0 border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 md:block"
+          className={[
+            "fixed inset-y-0 left-0 z-50 w-[min(100vw-3rem,16rem)] max-w-[16rem] shrink-0 transform border-r border-slate-200 bg-white p-4 shadow-lg transition-transform dark:border-slate-800 dark:bg-slate-900 lg:static lg:w-64 lg:translate-x-0 lg:shadow-none",
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          ].join(" ")}
         >
           <div className="mb-8 px-2">
             <div className="text-sm font-semibold uppercase tracking-wide text-slate-500">HRIS</div>
@@ -276,11 +294,25 @@ export function AppShell() {
         <div className="flex min-h-screen flex-1 flex-col">
           <header
             data-tour="staff-header"
-            className="relative flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900"
+            className="relative border-b border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-900 sm:px-4 sm:py-3"
           >
-            <div className="flex flex-1 flex-wrap items-center gap-3">
+            {/* Mobile / tablet: two rows so menu + actions never overlap */}
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+              <button
+                type="button"
+                className="inline-flex shrink-0 items-center justify-center rounded-lg border-2 border-slate-300 bg-slate-50 p-2.5 text-slate-800 shadow-sm transition hover:bg-slate-100 lg:hidden dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+                onClick={() => setMobileMenuOpen((open) => !open)}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="staff-sidebar-nav"
+                aria-label="Open navigation menu"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
               {isAdminArea && (
-                <div className="relative">
+                <div className="relative shrink-0">
                   <button
                     type="button"
                     onClick={() => setNotifOpen((o) => !o)}
@@ -298,7 +330,7 @@ export function AppShell() {
                     )}
                   </button>
                   {notifOpen && (
-                    <div className="absolute left-0 top-12 z-40 w-[380px] rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+                    <div className="absolute left-0 top-12 z-40 w-[calc(100vw-2rem)] max-w-[380px] rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl dark:border-slate-700 dark:bg-slate-900">
                       <div className="mb-2 flex items-center justify-between px-1 py-1">
                         <h3 className="text-sm font-semibold">Notifications</h3>
                         <div className="flex items-center gap-2">
@@ -361,9 +393,11 @@ export function AppShell() {
                   )}
                 </div>
               )}
-              <div className="text-sm text-slate-500 md:hidden">HRIS</div>
+              <div className="truncate text-sm font-medium text-slate-600 dark:text-slate-400 lg:hidden">
+                HRIS
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={toggleDark}
@@ -371,9 +405,9 @@ export function AppShell() {
               >
                 Theme
               </button>
-              <div className="text-right text-sm">
-                <div className="font-medium">{user?.email}</div>
-                <div className="text-xs text-slate-500">{user?.role.replace("_", " ")}</div>
+              <div className="min-w-0 max-w-[min(52vw,11rem)] text-right text-[11px] leading-tight sm:max-w-[14rem] sm:text-sm">
+                <div className="truncate font-medium">{user?.email}</div>
+                <div className="text-[10px] text-slate-500 sm:text-xs">{user?.role.replace("_", " ")}</div>
               </div>
               <button
                 type="button"
@@ -382,6 +416,7 @@ export function AppShell() {
               >
                 Sign out
               </button>
+            </div>
             </div>
           </header>
           {floating && (
