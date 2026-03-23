@@ -25,11 +25,27 @@ import { announcementsRouter } from "./routes/announcements.js";
 
 export function createApp() {
   const app = express();
+  app.set("trust proxy", 1);
 
   app.use(helmet());
+
+  const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+    : [];
+
   app.use(
     cors({
-      origin: process.env.CORS_ORIGIN?.split(",") ?? ["http://localhost:5173"],
+      origin: (origin, callback) => {
+        // allow non-browser / server-to-server calls (no Origin header)
+        if (!origin) return callback(null, true);
+        // always allow localhost dev
+        if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
+        // always allow any *.vercel.app subdomain (covers all preview + prod deployments)
+        if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)) return callback(null, true);
+        // fall back to explicit list in CORS_ORIGIN env
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+      },
       credentials: true,
     })
   );
